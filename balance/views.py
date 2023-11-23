@@ -18,29 +18,26 @@ def home():
 @app.route('/nuevo', methods=['GET', 'POST'])
 def add_movement():
     """
-    Crea un movimiento nuevo y lo guarda en el archivo CSV
-
-    1. Recibo una petición GET: pinto el formulario vacío
-    2. Recibo una petición POST:
-        - Recojo los datos del formulario
-        - Creo un movimiento con los datos que llegan
-        - Compruebo que el movimiento no tiene errores (validación)
-        - Utilizo la lista de movimientos para agregar el
-          nuevo movimiento (se guarda en el archivo CSV)
-        - Redirección a la página home (la que tiene la tabla de movimientos)
+    Crea un movimiento nuevo y lo guarda en el archivo CSV.
     """
     if request.method == 'GET':
         return render_template("nuevo.html")
-    if request.method == 'POST':
-        datos = request.form
-        movimiento = Movimiento(datos)
-        if movimiento.has_errors:
-            return f'Error en el nuevo movimiento. {movimiento.errores}'
-        lista = ListaMovimientos()
-        lista.leer_desde_archivo()
-        lista.agregar(movimiento)
-        return redirect(url_for('home'))
+    elif request.method == 'POST':
+        return handle_post_request(request.form)
 
+def handle_post_request(form_data):
+    """
+    Maneja la lógica del formulario POST para agregar un movimiento.
+    """
+    movimiento = Movimiento(form_data)
+    if movimiento.has_errors:
+        return f'Error en el nuevo movimiento. {movimiento.errores}'
+    
+    lista = ListaMovimientos()
+    lista.leer_desde_archivo()
+    lista.agregar(movimiento)
+    
+    return redirect(url_for('home'))
 
 @app.route('/modificar')
 def update():

@@ -18,6 +18,11 @@ CLAVES_IGNORADAS = ['errores']
 
 
 class Movimiento:
+    """
+    Representa un movimiento financiero con fecha, concepto, tipo e importe.
+    Permite la validación de datos y el manejo de errores.
+    """
+
     def __init__(self, dic_datos):
         self.errores = []
 
@@ -56,7 +61,8 @@ class Movimiento:
 
 class ListaMovimientos:
     """
-    Almacenar y gestionar la lista con todos los movimientos
+    Administra una lista de movimientos financieros.
+    Permite la lectura desde y la escritura en un archivo CSV.
     """
 
     def __init__(self):
@@ -79,28 +85,20 @@ class ListaMovimientos:
         self.guardar_archivo()
 
     def guardar_archivo(self):
-        """
-        Actualiza el archivo CSV con los movimientos que hay
-        en la lista de movimientos.
-
-        1. Vacia el archivo CSV
-        2. Escribe la línea de cabecera con el nombre de los campos
-        3. Escribe los movimientos uno a uno en el archivo CSV
-        """
-        with open(RUTA_FICHERO, 'w') as csvfile:
-            fieldnames = list(self.movimientos[0].__dict__.keys())
-            for clave in CLAVES_IGNORADAS:
-                fieldnames.remove(clave)
-
+        # Actualiza el archivo CSV con los movimientos
+        with open(RUTA_FICHERO, 'w', newline='') as csvfile:
+            fieldnames = ['fecha', 'concepto', 'tipo', 'cantidad']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
 
             for mov in self.movimientos:
-                mov_dict = mov.__dict__
-                for clave in CLAVES_IGNORADAS:
-                    mov_dict.pop(clave)
-                writer.writerow(mov_dict)
+                writer.writerow({
+                    'fecha': mov.fecha,
+                    'concepto': mov.concepto,
+                    'tipo': mov.tipo,
+                    'cantidad': mov.cantidad
+                })
 
     def __str__(self):
         """
